@@ -129,4 +129,19 @@ suite('Copy path to code — integration', () => {
     const expectedPath = editor.document.uri.fsPath;
     assert.deepStrictEqual(cap.messages, [`Copied: ${expectedPath}`]);
   });
+
+  test('shows copied path with line range in notification', async () => {
+    const tmpFile = makeTempFile('delta.txt', 'a\nb\nc\nd\ne\n');
+    const doc = await vscode.workspace.openTextDocument(tmpFile);
+    const editor = await vscode.window.showTextDocument(doc);
+    editor.selection = new vscode.Selection(1, 0, 3, 1);
+    const cap = captureInfoMessages();
+    try {
+      await vscode.commands.executeCommand('copyPathToCode.copy');
+    } finally {
+      cap.restore();
+    }
+    const expectedPath = editor.document.uri.fsPath;
+    assert.deepStrictEqual(cap.messages, [`Copied: ${expectedPath}#L2-L4`]);
+  });
 });
