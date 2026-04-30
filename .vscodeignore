@@ -16,3 +16,4 @@ vitest.config.ts
 .vscode-test.mjs
 opencode.json
 demo.gif
+AGENTS.md
