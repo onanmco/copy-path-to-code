@@ -8,6 +8,16 @@
   "author": { "name": "Cem Onan", "email": "onanmco@gmail.com" },
   "engines": { "vscode": "^1.75.0" },
   "main": "./dist/extension.js",
+  "keywords": [
+    "copy path",
+    "clipboard",
+    "file path",
+    "line range",
+    "ai",
+    "code review",
+    "cursor",
+    "reference"
+  ],
   "categories": ["Other"],
   "activationEvents": [
     "onCommand:copyPathToCode.copy"
