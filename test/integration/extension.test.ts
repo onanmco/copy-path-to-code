@@ -127,7 +127,7 @@ suite('Copy path to code — integration', () => {
       cap.restore();
     }
     const expectedPath = editor.document.uri.fsPath;
-    assert.deepStrictEqual(cap.messages, [`Copied: ${expectedPath}`]);
+    assert.deepStrictEqual(cap.messages, [`Copied: @${expectedPath}`]);
   });
 
   test('shows copied path with line range in notification', async () => {
@@ -142,6 +142,6 @@ suite('Copy path to code — integration', () => {
       cap.restore();
     }
     const expectedPath = editor.document.uri.fsPath;
-    assert.deepStrictEqual(cap.messages, [`Copied: ${expectedPath}#L2-L4`]);
+    assert.deepStrictEqual(cap.messages, [`Copied: @${expectedPath}#L2-L4`]);
   });
 });
