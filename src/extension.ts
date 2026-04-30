@@ -24,7 +24,7 @@ export function activate(context: vscode.ExtensionContext): void {
     }));
     const text = formatCopyTarget(fsPath, selections);
     await vscode.env.clipboard.writeText(text);
-    await vscode.window.showInformationMessage('Copied path to clipboard');
+    await vscode.window.showInformationMessage(`Copied: ${text}`);
   });
   context.subscriptions.push(disposable);
 }
