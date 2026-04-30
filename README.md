@@ -4,7 +4,11 @@
 
 Copies the active file's path (with optional line range) to the clipboard in `@<path>[#L<range>]` format — ready to paste into AI chats and code reviews.
 
-[![VS Code Marketplace](https://img.shields.io/badge/VS%20Code%20Marketplace-Install-blue?logo=visual-studio-code)](https://marketplace.visualstudio.com/items?itemName=onanmco.copy-path-to-code)
+[![VS Code Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/onanmco.copy-path-to-code?label=VS%20Code%20Marketplace&color=blue)](https://marketplace.visualstudio.com/items?itemName=onanmco.copy-path-to-code)
+[![Installs](https://img.shields.io/visual-studio-marketplace/i/onanmco.copy-path-to-code?label=Installs&color=blue)](https://marketplace.visualstudio.com/items?itemName=onanmco.copy-path-to-code)
+[![GitHub Release](https://img.shields.io/github/v/release/onanmco/copy-path-to-code?include_prereleases&label=Release)](https://github.com/onanmco/copy-path-to-code/releases)
+[![CI](https://github.com/onanmco/copy-path-to-code/actions/workflows/ci.yml/badge.svg)](https://github.com/onanmco/copy-path-to-code/actions/workflows/ci.yml)
+[![VS Code Engine](https://img.shields.io/badge/VS%20Code-%3E%3D1.75.0-blue)](https://code.visualstudio.com/)
 
 ## Install
 
