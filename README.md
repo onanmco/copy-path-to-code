@@ -4,9 +4,17 @@
 
 Copies the active file's path (with optional line range) to the clipboard in `@<path>[#L<range>]` format — ready to paste into AI chats and code reviews.
 
+[![VS Code Marketplace](https://img.shields.io/badge/VS%20Code%20Marketplace-Install-blue?logo=visual-studio-code)](https://marketplace.visualstudio.com/items?itemName=onanmco.copy-path-to-code)
+
 ## Install
 
-### From the releases page (recommended)
+### From the VS Code Marketplace (recommended)
+
+`Extensions` → search **Copy path to code** → Install.
+
+Or visit [marketplace.visualstudio.com](https://marketplace.visualstudio.com/items?itemName=onanmco.copy-path-to-code).
+
+### From the GitHub releases
 
 1. Go to [Releases](https://github.com/onanmco/copy-path-to-code/releases)
 2. Download the latest `.vsix` file
