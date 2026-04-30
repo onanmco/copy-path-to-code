@@ -115,7 +115,7 @@ suite('Copy path to code — integration', () => {
     assert.deepStrictEqual(cap.messages, ['Copy path to code: no file path available']);
   });
 
-  test('shows a success info notification after copying', async () => {
+  test('shows a success info notification with the copied path', async () => {
     const tmpFile = makeTempFile('gamma.txt', 'one\ntwo\nthree\n');
     const doc = await vscode.workspace.openTextDocument(tmpFile);
     const editor = await vscode.window.showTextDocument(doc);
@@ -126,6 +126,7 @@ suite('Copy path to code — integration', () => {
     } finally {
       cap.restore();
     }
-    assert.deepStrictEqual(cap.messages, ['Copied path to clipboard']);
+    const expectedPath = editor.document.uri.fsPath;
+    assert.deepStrictEqual(cap.messages, [`Copied: ${expectedPath}`]);
   });
 });
