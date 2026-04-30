@@ -4,7 +4,8 @@
 
 Copies the active file's path (with optional line range) to the clipboard in `@<path>[#L<range>]` format — ready to paste into AI chats and code reviews.
 
-[![VS Code Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/onanmco.copy-path-to-code?label=VS%20Code%20Marketplace&color=blue)](https://marketplace.visualstudio.com/items?itemName=onanmco.copy-path-to-code)
+[![VS Code Marketplace](https://img.shields.io/visual-studio-marketplace/v/onanmco.copy-path-to-code?label=VS%20Code%20Marketplace&color=blue)](https://marketplace.visualstudio.com/items?itemName=onanmco.copy-path-to-code)
+[![Open VSX](https://img.shields.io/open-vsx/v/onanmco/copy-path-to-code?label=Open%20VSX)](https://open-vsx.org/extension/onanmco/copy-path-to-code)
 [![Installs](https://img.shields.io/visual-studio-marketplace/i/onanmco.copy-path-to-code?label=Installs&color=blue)](https://marketplace.visualstudio.com/items?itemName=onanmco.copy-path-to-code)
 [![GitHub Release](https://img.shields.io/github/v/release/onanmco/copy-path-to-code?include_prereleases&label=Release)](https://github.com/onanmco/copy-path-to-code/releases)
 [![CI](https://github.com/onanmco/copy-path-to-code/actions/workflows/ci.yml/badge.svg)](https://github.com/onanmco/copy-path-to-code/actions/workflows/ci.yml)
@@ -17,6 +18,12 @@ Copies the active file's path (with optional line range) to the clipboard in `@<
 `Extensions` → search **Copy path to code** → Install.
 
 Or visit [marketplace.visualstudio.com](https://marketplace.visualstudio.com/items?itemName=onanmco.copy-path-to-code).
+
+### From Open VSX
+
+Open VS Code's `Extensions` → search **Copy path to code** (with Cursor or other open-source VS Code builds).
+
+Or visit [open-vsx.org](https://open-vsx.org/extension/onanmco/copy-path-to-code).
 
 ### From the GitHub releases
 
