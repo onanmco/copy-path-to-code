@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'vitest';
 import { formatCopyTarget } from '../../src/formatter';
+import { formatNotificationText } from '../../src/formatter';
 
 describe('formatCopyTarget', () => {
   test('returns @<path> when selections array is empty', () => {
@@ -49,5 +50,109 @@ describe('formatCopyTarget', () => {
     expect(formatCopyTarget('/Users/developer/foo.ts', [
       { startLine: 0, endLine: 0, endChar: 5, isEmpty: false },
     ])).toBe('@/Users/developer/foo.ts#L1');
+  });
+});
+
+describe('formatNotificationText', () => {
+  test('short path returns single line', () => {
+    const result = formatNotificationText('/home/user/file.ts', []);
+    expect(result).toBe('Copied: @/home/user/file.ts');
+  });
+
+  test('short path with line range returns single line', () => {
+    const result = formatNotificationText('/home/user/file.ts', [
+      { startLine: 9, endLine: 9, endChar: 5, isEmpty: false },
+    ]);
+    expect(result).toBe('Copied: @/home/user/file.ts#L10');
+  });
+
+  test('path at exactly 60 chars stays single line', () => {
+    // "@/" (2) + 45-char path + "#L10" (4) = 51 + "Copied: " (9) = 60 total
+    const path = '/x'.repeat(44); // 44 chars => @/ + 44 = 46; + #L10 = 51
+    const result = formatNotificationText(path, [
+      { startLine: 9, endLine: 9, endChar: 5, isEmpty: false },
+    ]);
+    expect(result).not.toContain('\n');
+  });
+
+  test('path just over 60 chars wraps to multi-line', () => {
+    const path = '/x'.repeat(60); // long enough that Copied: @/xxxx... > 60
+    const result = formatNotificationText(path, []);
+    expect(result).toContain('\n');
+    expect(result.startsWith('Copied:\n  @/')).toBe(true);
+  });
+
+  test('long POSIX path breaks at forward slashes with indent', () => {
+    // 68-char content -> wraps at last / before pos 60 (position 51, the / after "to")
+    const result = formatNotificationText(
+      '/very/long/nested/deep/directory/structure/path/to/file.ts',
+      [{ startLine: 9, endLine: 14, endChar: 5, isEmpty: false }]
+    );
+    const lines = result.split('\n');
+    expect(lines[0]).toBe('Copied:');
+    expect(lines[1]).toMatch(/^  @\/very\/long\/nested\/deep\/directory\/structure\/path\/to\/$/);
+    expect(lines[2]).toMatch(/^  file\.ts#L10-L15$/);
+  });
+
+  test('long Windows path breaks at backslashes with indent', () => {
+    // 70-char content -> wraps at last \ before pos 60 (position 51, the \ after "directory")
+    const result = formatNotificationText(
+      'C:\\Users\\developer\\very\\long\\nested\\deep\\directory\\structure\\file.ts',
+      []
+    );
+    const lines = result.split('\n');
+    expect(lines[0]).toBe('Copied:');
+    expect(lines[1]).toMatch(/^  @C:\\Users\\developer\\very\\long\\nested\\deep\\directory\\$/);
+    expect(lines[2]).toMatch(/^  structure\\file\.ts$/);
+  });
+
+  test('empty selections with long path wraps path only', () => {
+    // 68-char content -> wraps
+    const result = formatNotificationText(
+      '/very/long/nested/deep/directory/structure/path/to/file.ts',
+      []
+    );
+    expect(result).toContain('\n');
+    expect(result).toContain('file.ts');
+    expect(result).not.toContain('#L');
+  });
+
+  test('multi-cursor short path stays single line', () => {
+    const result = formatNotificationText('/home/user/file.ts', [
+      { startLine: 0, endLine: 0, endChar: 5, isEmpty: false },
+      { startLine: 5, endLine: 5, endChar: 3, isEmpty: false },
+    ]);
+    expect(result).toBe('Copied: @/home/user/file.ts#L1, @/home/user/file.ts#L6');
+  });
+
+  test('multi-cursor long path wraps each ref independently', () => {
+    const result = formatNotificationText(
+      'C:\\Users\\developer\\very\\long\\nested\\deep\\directory\\structure\\file.ts',
+      [
+        { startLine: 9, endLine: 14, endChar: 5, isEmpty: false },
+        { startLine: 39, endLine: 39, endChar: 0, isEmpty: true },
+      ]
+    );
+    const lines = result.split('\n');
+    expect(lines[0]).toBe('Copied:');
+    // first ref wraps
+    expect(lines[1]).toContain('#L10-L15');
+    // second ref starts on its own set of lines after ',\n  @'
+    const body = lines.slice(1).join('\n');
+    expect(body).toContain(',\n  @');
+    expect(body).toContain('#L40');
+  });
+
+  test('bare filename with no separators stays single line', () => {
+    const result = formatNotificationText('/file.ts', []);
+    expect(result).toBe('Copied: @/file.ts');
+  });
+
+  test('single very long path segment stays on its own line', () => {
+    const longName = '/verylongfilename' + 'x'.repeat(60) + '.ts';
+    const result = formatNotificationText(longName, []);
+    // No separators to break on — stays as one wrapped line
+    expect(result.startsWith('Copied:\n  @')).toBe(true);
+    expect(result.split('\n').length).toBe(2); // header + one content line
   });
 });
