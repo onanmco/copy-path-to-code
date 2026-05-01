@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { formatCopyTarget, Sel } from './formatter';
+import { formatCopyTarget, formatNotificationText, Sel } from './formatter';
 
 const NO_PATH_MESSAGE = 'Copy path to code: no file path available';
 
@@ -24,7 +24,7 @@ export function activate(context: vscode.ExtensionContext): void {
     }));
     const text = formatCopyTarget(fsPath, selections);
     await vscode.env.clipboard.writeText(text);
-    await vscode.window.showInformationMessage(`Copied: ${text}`);
+    await vscode.window.showInformationMessage(formatNotificationText(fsPath, selections));
   });
   context.subscriptions.push(disposable);
 }
