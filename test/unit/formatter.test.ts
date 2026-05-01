@@ -136,7 +136,7 @@ describe('formatNotificationText', () => {
     const lines = result.split('\n');
     expect(lines[0]).toBe('Copied:');
     // first ref wraps
-    expect(lines[1]).toContain('#L10-L15');
+    expect(lines[2]).toContain('#L10-L15');
     // second ref starts on its own set of lines after ',\n  @'
     expect(lines[3]).toMatch(/^  @C:\\Users\\developer\\very\\long\\nested\\deep\\directory\\$/);
     const body = lines.slice(1).join('\n');

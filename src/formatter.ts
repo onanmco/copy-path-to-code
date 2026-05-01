@@ -6,6 +6,7 @@ export interface Sel {
 }
 
 const NOTIFICATION_LINE_LIMIT = 60;
+const INDENT = '  ';
 
 export function formatNotificationText(fsPath: string, selections: Sel[]): string {
   const content = formatCopyTarget(fsPath, selections);
@@ -20,19 +21,19 @@ export function formatNotificationText(fsPath: string, selections: Sel[]): strin
   if (content.includes(', @')) {
     const parts = content.split(', @');
     const wrapped = parts.map((p) => wrapSingleRef(p, sep));
-    return `Copied:\n  ${wrapped.join(',\n  @')}`;
+    return `Copied:\n${INDENT}${wrapped.join(',\n  @')}`;
   }
 
-  return `Copied:\n  ${wrapSingleRef(content, sep)}`;
+  return `Copied:\n${INDENT}${wrapSingleRef(content, sep)}`;
 }
 
 function wrapSingleRef(ref: string, sep: string): string {
-  const wrapLimit = NOTIFICATION_LINE_LIMIT - 2; // account for indent
+  const limit = NOTIFICATION_LINE_LIMIT - INDENT.length;
   const lines: string[] = [];
   let start = 0;
 
   while (start < ref.length) {
-    let end = Math.min(start + wrapLimit, ref.length);
+    let end = Math.min(start + limit, ref.length);
 
     if (end < ref.length) {
       const breakPos = ref.lastIndexOf(sep, end);
@@ -47,7 +48,7 @@ function wrapSingleRef(ref: string, sep: string): string {
     start = end;
   }
 
-  return lines.join('\n  ');
+  return lines.join('\n' + INDENT);
 }
 
 export function formatCopyTarget(fsPath: string, selections: Sel[]): string {
