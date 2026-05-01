@@ -127,6 +127,8 @@ suite('Copy path to code — integration', () => {
       cap.restore();
     }
     const expectedPath = editor.document.uri.fsPath;
+    // Notification format is now produced by formatNotificationText.
+    // Short paths (under 60 chars) produce the same single-line format as before.
     assert.deepStrictEqual(cap.messages, [`Copied: @${expectedPath}`]);
   });
 
@@ -142,6 +144,7 @@ suite('Copy path to code — integration', () => {
       cap.restore();
     }
     const expectedPath = editor.document.uri.fsPath;
+    // Notification format is now produced by formatNotificationText.
     assert.deepStrictEqual(cap.messages, [`Copied: @${expectedPath}#L2-L4`]);
   });
 });
