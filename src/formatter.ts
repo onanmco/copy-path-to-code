@@ -5,6 +5,51 @@ export interface Sel {
   isEmpty: boolean;   // true when no characters are selected (cursor only)
 }
 
+const NOTIFICATION_LINE_LIMIT = 60;
+
+export function formatNotificationText(fsPath: string, selections: Sel[]): string {
+  const content = formatCopyTarget(fsPath, selections);
+
+  const single = `Copied: ${content}`;
+  if (single.length <= NOTIFICATION_LINE_LIMIT) {
+    return single;
+  }
+
+  const sep = content.includes('\\') ? '\\' : '/';
+
+  if (content.includes(', @')) {
+    const parts = content.split(', @');
+    const wrapped = parts.map((p) => wrapSingleRef(p, sep));
+    return `Copied:\n  ${wrapped.join(',\n  @')}`;
+  }
+
+  return `Copied:\n  ${wrapSingleRef(content, sep)}`;
+}
+
+function wrapSingleRef(ref: string, sep: string): string {
+  const wrapLimit = NOTIFICATION_LINE_LIMIT - 2; // account for indent
+  const lines: string[] = [];
+  let start = 0;
+
+  while (start < ref.length) {
+    let end = Math.min(start + wrapLimit, ref.length);
+
+    if (end < ref.length) {
+      const breakPos = ref.lastIndexOf(sep, end);
+      if (breakPos > start + 1) {
+        end = breakPos + 1;
+      } else {
+        end = ref.length;
+      }
+    }
+
+    lines.push(ref.slice(start, end));
+    start = end;
+  }
+
+  return lines.join('\n  ');
+}
+
 export function formatCopyTarget(fsPath: string, selections: Sel[]): string {
   if (selections.length === 0) return `@${fsPath}`;
   if (selections.length === 1 && selections[0].isEmpty) return `@${fsPath}`;
