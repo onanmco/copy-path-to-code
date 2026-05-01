@@ -67,8 +67,8 @@ describe('formatNotificationText', () => {
   });
 
   test('path at exactly 60 chars stays single line', () => {
-    // "@/" (2) + 45-char path + "#L10" (4) = 51 + "Copied: " (9) = 60 total
-    const path = '/x'.repeat(44); // 44 chars => @/ + 44 = 46; + #L10 = 51
+    // "Copied: @" (9) + path (47) + "#L10" (4) = 60 total
+    const path = '/' + 'x'.repeat(46);
     const result = formatNotificationText(path, [
       { startLine: 9, endLine: 9, endChar: 5, isEmpty: false },
     ]);
@@ -138,12 +138,13 @@ describe('formatNotificationText', () => {
     // first ref wraps
     expect(lines[1]).toContain('#L10-L15');
     // second ref starts on its own set of lines after ',\n  @'
+    expect(lines[3]).toMatch(/^  @C:\\Users\\developer\\very\\long\\nested\\deep\\directory\\$/);
     const body = lines.slice(1).join('\n');
     expect(body).toContain(',\n  @');
     expect(body).toContain('#L40');
   });
 
-  test('bare filename with no separators stays single line', () => {
+  test('short single-segment path stays single line', () => {
     const result = formatNotificationText('/file.ts', []);
     expect(result).toBe('Copied: @/file.ts');
   });
