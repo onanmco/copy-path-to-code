@@ -7,12 +7,12 @@ export function activate(context: vscode.ExtensionContext): void {
   const disposable = vscode.commands.registerCommand('copyPathToCode.copy', async () => {
     const editor = vscode.window.activeTextEditor;
     if (!editor) {
-      await vscode.window.showErrorMessage(NO_PATH_MESSAGE);
+      await vscode.window.showWarningMessage(NO_PATH_MESSAGE);
       return;
     }
     const uri = editor.document.uri;
-    if (uri.scheme !== 'file') {
-      await vscode.window.showErrorMessage(NO_PATH_MESSAGE);
+    if (uri.scheme === 'untitled') {
+      await vscode.window.showWarningMessage(NO_PATH_MESSAGE);
       return;
     }
     const fsPath = uri.fsPath;
