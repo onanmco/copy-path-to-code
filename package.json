@@ -2,7 +2,7 @@
   "name": "copy-path-to-code",
   "displayName": "Copy path to code",
   "description": "Copy the active file's absolute path (and selected line range, if any) to the clipboard.",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "publisher": "onanmco",
   "repository": { "type": "git", "url": "https://github.com/onanmco/copy-path-to-code.git" },
   "author": { "name": "Cem Onan", "email": "onanmco@gmail.com" },
