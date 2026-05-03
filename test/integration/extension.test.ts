@@ -22,6 +22,22 @@ function captureErrorMessages(): { messages: string[]; restore: () => void } {
   };
 }
 
+function captureWarningMessages(): { messages: string[]; restore: () => void } {
+  const messages: string[] = [];
+  const original = vscode.window.showWarningMessage;
+  (vscode.window as unknown as { showWarningMessage: typeof vscode.window.showWarningMessage }).showWarningMessage =
+    (async (msg: string) => {
+      messages.push(msg);
+      return undefined;
+    }) as unknown as typeof vscode.window.showWarningMessage;
+  return {
+    messages,
+    restore: () => {
+      (vscode.window as unknown as { showWarningMessage: typeof vscode.window.showWarningMessage }).showWarningMessage = original;
+    },
+  };
+}
+
 function captureInfoMessages(): { messages: string[]; restore: () => void } {
   const messages: string[] = [];
   const original = vscode.window.showInformationMessage;
@@ -87,10 +103,10 @@ suite('Copy path to code — integration', () => {
     assert.strictEqual(text, `@${editor.document.uri.fsPath}#L2-L4`);
   });
 
-  test('shows an error and leaves clipboard unchanged when no editor is active', async () => {
+  test('shows a warning and leaves clipboard unchanged when no editor is active', async () => {
     await vscode.commands.executeCommand('workbench.action.closeAllEditors');
     await vscode.env.clipboard.writeText('__sentinel__');
-    const cap = captureErrorMessages();
+    const cap = captureWarningMessages();
     try {
       await vscode.commands.executeCommand('copyPathToCode.copy');
     } finally {
@@ -101,11 +117,11 @@ suite('Copy path to code — integration', () => {
     assert.deepStrictEqual(cap.messages, ['Copy path to code: no file path available']);
   });
 
-  test('shows an error and leaves clipboard unchanged for an untitled buffer', async () => {
+  test('shows a warning and leaves clipboard unchanged for an untitled buffer', async () => {
     const doc = await vscode.workspace.openTextDocument({ content: 'untitled body' });
     await vscode.window.showTextDocument(doc);
     await vscode.env.clipboard.writeText('__sentinel__');
-    const cap = captureErrorMessages();
+    const cap = captureWarningMessages();
     try {
       await vscode.commands.executeCommand('copyPathToCode.copy');
     } finally {
@@ -146,5 +162,25 @@ suite('Copy path to code — integration', () => {
     const selections: Sel[] = [{ startLine: 1, endLine: 3, endChar: 1, isEmpty: false }];
     const expectedMsg = formatNotificationText(editor.document.uri.fsPath, selections);
     assert.deepStrictEqual(cap.messages, [expectedMsg]);
+  });
+
+  test('copies path for a non-file URI scheme (e.g. vscode-userdata settings)', async () => {
+    const scheme = 'vscode-test-userdata';
+    const disposable = vscode.workspace.registerTextDocumentContentProvider(scheme, {
+      provideTextDocumentContent(_uri: vscode.Uri): string {
+        return '{"editor.fontSize": 14}';
+      }
+    });
+    try {
+      const uri = vscode.Uri.parse(`${scheme}://settings.json`);
+      const doc = await vscode.workspace.openTextDocument(uri);
+      const editor = await vscode.window.showTextDocument(doc);
+      await vscode.commands.executeCommand('copyPathToCode.copy');
+      const text = await vscode.env.clipboard.readText();
+      assert.ok(text.includes('settings.json'), `clipboard text should include path: ${text}`);
+      assert.ok(text.startsWith('@'), `clipboard text should start with @: ${text}`);
+    } finally {
+      disposable.dispose();
+    }
   });
 });
