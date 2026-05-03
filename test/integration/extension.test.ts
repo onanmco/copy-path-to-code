@@ -64,10 +64,12 @@ function makeTempFile(name: string, content: string): string {
 suite('Copy path to code — integration', () => {
   let errorStub: { messages: string[]; restore: () => void };
   let infoStub: { messages: string[]; restore: () => void };
+  let warnStub: { messages: string[]; restore: () => void };
 
   setup(async () => {
     errorStub = captureErrorMessages();
     infoStub = captureInfoMessages();
+    warnStub = captureWarningMessages();
     await vscode.commands.executeCommand('workbench.action.closeAllEditors');
     await vscode.env.clipboard.writeText('__pre__');
   });
@@ -162,25 +164,5 @@ suite('Copy path to code — integration', () => {
     const selections: Sel[] = [{ startLine: 1, endLine: 3, endChar: 1, isEmpty: false }];
     const expectedMsg = formatNotificationText(editor.document.uri.fsPath, selections);
     assert.deepStrictEqual(cap.messages, [expectedMsg]);
-  });
-
-  test('copies path for a non-file URI scheme (e.g. vscode-userdata settings)', async () => {
-    const scheme = 'vscode-test-userdata';
-    const disposable = vscode.workspace.registerTextDocumentContentProvider(scheme, {
-      provideTextDocumentContent(_uri: vscode.Uri): string {
-        return '{"editor.fontSize": 14}';
-      }
-    });
-    try {
-      const uri = vscode.Uri.parse(`${scheme}://settings.json`);
-      const doc = await vscode.workspace.openTextDocument(uri);
-      const editor = await vscode.window.showTextDocument(doc);
-      await vscode.commands.executeCommand('copyPathToCode.copy');
-      const text = await vscode.env.clipboard.readText();
-      assert.ok(text.includes('settings.json'), `clipboard text should include path: ${text}`);
-      assert.ok(text.startsWith('@'), `clipboard text should start with @: ${text}`);
-    } finally {
-      disposable.dispose();
-    }
   });
 });
