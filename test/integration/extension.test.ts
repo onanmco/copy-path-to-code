@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
+import { formatNotificationText, Sel } from '../../src/formatter';
 
 function captureErrorMessages(): { messages: string[]; restore: () => void } {
   const messages: string[] = [];
@@ -126,10 +127,9 @@ suite('Copy path to code — integration', () => {
     } finally {
       cap.restore();
     }
-    const expectedPath = editor.document.uri.fsPath;
-    // Notification format is now produced by formatNotificationText.
-    // Short paths (under 60 chars) produce the same single-line format as before.
-    assert.deepStrictEqual(cap.messages, [`Copied: @${expectedPath}`]);
+    const selections: Sel[] = [{ startLine: 0, endLine: 0, endChar: 0, isEmpty: true }];
+    const expectedMsg = formatNotificationText(editor.document.uri.fsPath, selections);
+    assert.deepStrictEqual(cap.messages, [expectedMsg]);
   });
 
   test('shows copied path with line range in notification', async () => {
@@ -143,8 +143,8 @@ suite('Copy path to code — integration', () => {
     } finally {
       cap.restore();
     }
-    const expectedPath = editor.document.uri.fsPath;
-    // Notification format is now produced by formatNotificationText.
-    assert.deepStrictEqual(cap.messages, [`Copied: @${expectedPath}#L2-L4`]);
+    const selections: Sel[] = [{ startLine: 1, endLine: 3, endChar: 1, isEmpty: false }];
+    const expectedMsg = formatNotificationText(editor.document.uri.fsPath, selections);
+    assert.deepStrictEqual(cap.messages, [expectedMsg]);
   });
 });
